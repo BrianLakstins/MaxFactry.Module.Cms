@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>    
+    <id>MaxFactry.Module.Cms</id>
+    <version>1.0.1.0</version>
+    <title>MaxFactry CMS Module</title>
+    <authors>Brian Lakstins</authors>
+    <owners>brianlakstins</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://maxfactry.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CMS Module library for use in MaxFactry Framework</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright © Brian A. Lakstins (http://www.lakstins.com/brian/)</copyright>
+    <tags></tags>
+	  <dependencies>
+		  <group targetFramework=".NETFramework4.5.2">
+			  <dependency id="MaxFactry.General" version="1.0.1" />
+		  </group>
+	  </dependencies>
+	<summary>MaxFactry Cms supports the MaxFactry Framework</summary>
+  </metadata>
+  <files>
+    <file src="readme.md" target="" />
+    <file src="lib\Cms\**" target="lib/" />
+  </files>
+</package>
