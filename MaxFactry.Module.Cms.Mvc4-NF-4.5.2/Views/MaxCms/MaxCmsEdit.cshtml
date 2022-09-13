@@ -1,0 +1,61 @@
+﻿@model MaxFactry.Module.Cms.PresentationLayer.MaxWebPageContentViewModel
+@{
+    Html.MaxIncludeClientTool("TinyMCE");
+    Html.MaxIncludeClientTool("JQuery");
+}
+@section StyleSection
+{
+}
+@section ScriptSection
+{
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            tinymce.init({
+                selector: "#udContentEditor",
+                plugins: [
+                    "advlist save code link image media table contextmenu paste hr textcolor"
+                ],
+                toolbar: "save bold italic underline strikethrough alignleft aligncenter alignright alignjustify | styleselect formatselect forecolor backcolor | cut copy paste | bullist numlist outdent indent | undo redo removeformat subscript superscript | link image | code",
+                menubar: false,
+                save_enablewhendirty: true,
+                max_height: 600,
+                min_height: 160,
+                height: 200,
+                extended_valid_elements: 'script[language|type|src]'
+            });
+        });
+    </script>
+}
+<div id="udContentEditable">
+    <div><a href="/@Model.Url">Return to (/@Model.Url)</a></div>
+    @ViewBag.Message
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.TextAreaFor(m => m.Content, new Dictionary<string, object> { { "id", "udContentEditor" }, { "rows", Model.Content.Split('\n').Length.ToString() } })
+        @Html.HiddenFor(m => m.Url)
+        @Html.HiddenFor(m => m.Name)
+        <fieldset>
+            <legend>Page Title</legend>
+            <div>
+            @Html.TextBoxFor(m => m.MetaTitle, new Dictionary<string, object> { {"class", "form-control"} })<input type="submit" name="uoProcess" value="Save Title" class="btn btn-primary" />
+            </div>
+            
+        </fieldset>    
+        <fieldset>
+            <legend>Page Keywords</legend>
+            <div>
+            @Html.TextBoxFor(m => m.MetaKeyWords, new Dictionary<string, object> { {"class", "form-control"} })
+            </div>
+            <input type="submit" name="uoProcess" value="Save Keywords" class="btn btn-primary" />
+        </fieldset>    
+        <fieldset>
+            <legend>Page Description</legend>
+            <div>
+            @Html.TextAreaFor(m => m.MetaDescription, new Dictionary<string, object> { {"class", "form-control"}, { "cols", "80" }, { "rows", (Model.MetaDescription.Split('\n').Length + 3).ToString() } })
+            </div>
+            <input type="submit" name="uoProcess" value="Save Description" class="btn btn-primary" />
+        </fieldset>    
+    }
+
+</div>

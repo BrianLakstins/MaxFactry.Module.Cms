@@ -1,0 +1,47 @@
+﻿@model MaxFactry.Module.Cms.PresentationLayer.MaxWebPageContentViewModel
+@{
+    Html.MaxIncludeClientTool("JQuery");
+}
+
+@section StyleSection
+{
+    <style type="text/css">
+    </style>
+}
+@section ScriptSection
+{
+    <script type="text/javascript">
+        function pfEdit(lsControl) {
+            var lsPage = window.location.pathname;
+            if (confirm("Are you sure you want to edit?")) {
+                var lsUrl = '/MaxCmsEdit' + lsPage + '?name=' + lsControl;
+                window.location = lsUrl;
+            }
+        }
+
+        function pfEnableDblClickEdit()
+        {
+            jQuery("div[id^='udContent']").each(function (lnC) {
+                jQuery(this).on('dblclick', function () { pfEdit(jQuery(this).attr('id')) });
+            });
+        }
+
+        jQuery(function () {
+            if (@User.Identity.IsAuthenticated.ToString().ToLower() && true)
+            {
+                pfEnableDblClickEdit();
+            }
+            else
+            {
+                jQuery("body").on('keypress', function (loEventData)
+                {
+                    if (loEventData.key == "e" && (location.protocol == 'https:' || location.hostname == 'localhost' || location.hostname.indexOf('dns9.co', location.hostname.length - 7) !== -1))
+                    {
+                        pfEnableDblClickEdit();
+                    }
+                });
+            }
+        });
+    </script>
+}
+<div id="udContent">@Html.MaxCmsGetPublicContent("udContent")</div>
