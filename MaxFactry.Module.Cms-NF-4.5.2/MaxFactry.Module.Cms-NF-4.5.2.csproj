@@ -7,7 +7,7 @@
     <ProjectGuid>{42E9CFE1-FEC1-421A-94E7-A7F595351A01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MaxFactry.Module.Cms_NF_4._5._2</RootNamespace>
+    <RootNamespace>MaxFactry.Module.Cms</RootNamespace>
     <AssemblyName>MaxFactry.Module.Cms-NF-4.5.2</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -53,12 +53,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="MaxFactry.pfx" />
     <None Include="MaxFactry.snk" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MaxFactry.General">
-      <Version>1.0.9</Version>
+      <Version>1.0.10</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

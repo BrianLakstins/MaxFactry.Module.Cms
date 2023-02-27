@@ -19,6 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NuGet", "NuGet", "{CB472C37
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.Module.Cms-NF-4.7.2", "MaxFactry.Module.Cms-NF-4.7.2\MaxFactry.Module.Cms-NF-4.7.2.csproj", "{44BF3002-E227-4A1D-9CB8-56869EE88AEB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MaxFactry.Module.Cms-NF-4.8", "MaxFactry.Module.Cms-NF-4.8\MaxFactry.Module.Cms-NF-4.8.csproj", "{7E37B7C7-4A17-49AD-BB22-A8DC354E30CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{A4E49E4D-DBF9-4091-8812-628467EE622E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4E49E4D-DBF9-4091-8812-628467EE622E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4E49E4D-DBF9-4091-8812-628467EE622E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44BF3002-E227-4A1D-9CB8-56869EE88AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44BF3002-E227-4A1D-9CB8-56869EE88AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44BF3002-E227-4A1D-9CB8-56869EE88AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44BF3002-E227-4A1D-9CB8-56869EE88AEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E37B7C7-4A17-49AD-BB22-A8DC354E30CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E37B7C7-4A17-49AD-BB22-A8DC354E30CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E37B7C7-4A17-49AD-BB22-A8DC354E30CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E37B7C7-4A17-49AD-BB22-A8DC354E30CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
