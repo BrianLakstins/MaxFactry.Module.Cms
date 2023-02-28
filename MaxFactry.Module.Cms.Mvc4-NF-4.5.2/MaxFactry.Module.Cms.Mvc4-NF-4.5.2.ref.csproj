@@ -149,10 +149,6 @@
       <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
       <Name>MaxFactry.General-NF-4.5.2.ref</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.csproj">
-      <Project>{8f6a762f-3fde-4fc2-98ac-61cae1f3553c}</Project>
-      <Name>MaxFactry.General.AspNet-NF-4.5.2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General.AspNet.IIS-NF-4.5.2\MaxFactry.General.AspNet.IIS-NF-4.5.2.ref.csproj">
       <Project>{788ee320-dcde-457e-84df-e9f3869968d5}</Project>
       <Name>MaxFactry.General.AspNet.IIS-NF-4.5.2.ref</Name>
@@ -161,9 +157,9 @@
       <Project>{3a10b3b8-d2dd-4a75-bab1-54b38fbbcae2}</Project>
       <Name>MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.ref</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxFactry.Module.Cms-NF-4.5.2.csproj">
+    <ProjectReference Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxFactry.Module.Cms-NF-4.5.2.ref.csproj">
       <Project>{42e9cfe1-fec1-421a-94e7-a7f595351a01}</Project>
-      <Name>MaxFactry.Module.Cms-NF-4.5.2</Name>
+      <Name>MaxFactry.Module.Cms-NF-4.5.2.ref</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

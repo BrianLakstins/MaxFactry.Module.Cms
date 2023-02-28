@@ -30,58 +30,58 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-	<PropertyGroup>
-		<SignAssembly>true</SignAssembly>
-	</PropertyGroup>
-	<PropertyGroup>
-		<AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
-	<ItemGroup>
-		<Reference Include="System" />
-	</ItemGroup>
-	<ItemGroup>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxContentUrlEntity.cs">
-			<Link>BusinessLayer\Entity\MaxContentUrlEntity.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxWebPageTemplateEntity.cs">
-			<Link>BusinessLayer\Entity\MaxWebPageTemplateEntity.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxWebPageContentEntity.cs">
-			<Link>BusinessLayer\Entity\MaxWebPageContentEntity.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxContentUrlDataModel.cs">
-			<Link>DataLayer\DataModel\MaxContentUrlDataModel.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxWebPageTemplateDataModel.cs">
-			<Link>DataLayer\DataModel\MaxWebPageTemplateDataModel.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxWebPageContentDataModel.cs">
-			<Link>DataLayer\DataModel\MaxWebPageContentDataModel.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\Interface\IMaxContentRepositoryProvider.cs">
-			<Link>DataLayer\Repository\Interface\IMaxContentRepositoryProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\MaxContentRepository.cs">
-			<Link>DataLayer\Repository\MaxContentRepository.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\Provider\MaxContentRepositoryProvider.cs">
-			<Link>DataLayer\Repository\Provider\MaxContentRepositoryProvider.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxStartup.cs">
-			<Link>BusinessLayer\Entity\MaxContentUrlEntity.cs</Link>
-		</Compile>
-		<Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\PresentationLayer\Models\MaxWebPageContentViewModel.cs">
-			<Link>PresentationLayer\Models\MaxWebPageContentViewModel.cs</Link>
-		</Compile>
-		<Compile Include="Properties\AssemblyInfo.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="MaxFactry.snk" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="MaxFactry.General">
-			<Version>1.0.10</Version>
-		</PackageReference>
-	</ItemGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>MaxFactry.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxContentUrlEntity.cs">
+      <Link>BusinessLayer\Entity\MaxContentUrlEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxWebPageTemplateEntity.cs">
+      <Link>BusinessLayer\Entity\MaxWebPageTemplateEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\BusinessLayer\Entity\MaxWebPageContentEntity.cs">
+      <Link>BusinessLayer\Entity\MaxWebPageContentEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxContentUrlDataModel.cs">
+      <Link>DataLayer\DataModel\MaxContentUrlDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxWebPageTemplateDataModel.cs">
+      <Link>DataLayer\DataModel\MaxWebPageTemplateDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\DataModel\MaxWebPageContentDataModel.cs">
+      <Link>DataLayer\DataModel\MaxWebPageContentDataModel.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\Interface\IMaxContentRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Interface\IMaxContentRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\MaxContentRepository.cs">
+      <Link>DataLayer\Repository\MaxContentRepository.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\DataLayer\Repository\Provider\MaxContentRepositoryProvider.cs">
+      <Link>DataLayer\Repository\Provider\MaxContentRepositoryProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxStartup.cs">
+      <Link>BusinessLayer\Entity\MaxContentUrlEntity.cs</Link>
+    </Compile>
+    <Compile Include="..\MaxFactry.Module.Cms-NF-4.5.2\PresentationLayer\Models\MaxWebPageContentViewModel.cs">
+      <Link>PresentationLayer\Models\MaxWebPageContentViewModel.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MaxFactry.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaxFactry.General">
+      <Version>1.0.12</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
