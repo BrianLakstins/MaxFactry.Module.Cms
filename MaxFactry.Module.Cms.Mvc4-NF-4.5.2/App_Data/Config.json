@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfMaxIndexItemStructure xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <MaxIndexItemStructure>
+    <Key>MaxProfileId</Key>
+    <Value xmlns:q1="http://microsoft.com/wsdl/types/" xsi:type="q1:guid">d87924b6-b142-4265-be97-0c0b506f4b93</Value>
+  </MaxIndexItemStructure>
+  <MaxIndexItemStructure>
+    <Key>MaxProfileId9SsFD4qAL0GnH1JY9YbAOw</Key>
+    <Value xsi:type="xsd:string">System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Value>
+  </MaxIndexItemStructure>
+</ArrayOfMaxIndexItemStructure>
