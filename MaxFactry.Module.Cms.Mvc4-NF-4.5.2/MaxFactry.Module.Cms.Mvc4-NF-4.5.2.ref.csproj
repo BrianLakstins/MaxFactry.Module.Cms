@@ -61,12 +61,6 @@
     <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet-NF-4.5.2, Version=1.0.12.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.1.0.12\lib\net452\MaxFactry.General.AspNet-NF-4.5.2.dll</HintPath>
-    </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.12.0, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.12\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
@@ -135,6 +129,8 @@
     <Content Include="MaxFactry.snk" />
     <Content Include="ReadMe.md" />
     <None Include="packages.config" />
+    <Content Include="packages.nuget.config" />
+    <Content Include="packages.ref.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -143,17 +139,37 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Src\PresentationLayer\Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MaxFactry.Base\MaxFactry.Base-NF-4.5.2\MaxFactry.Base-NF-4.5.2.ref.csproj">
+      <Project>{2120b857-fad6-4310-9ec8-3d958087fee2}</Project>
+      <Name>MaxFactry.Base-NF-4.5.2.ref</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.Core\MaxFactry.Core-NF-4.5.2\MaxFactry.Core-NF-4.5.2.csproj">
+      <Project>{db84bcde-6f72-4657-811f-40a824ae041f}</Project>
+      <Name>MaxFactry.Core-NF-4.5.2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General-NF-4.5.2\MaxFactry.General-NF-4.5.2.ref.csproj">
+      <Project>{a625c04c-84c7-4d75-8e53-8b37542235e0}</Project>
+      <Name>MaxFactry.General-NF-4.5.2.ref</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General.AspNet-NF-4.5.2\MaxFactry.General.AspNet-NF-4.5.2.ref.csproj">
+      <Project>{8f6a762f-3fde-4fc2-98ac-61cae1f3553c}</Project>
+      <Name>MaxFactry.General.AspNet-NF-4.5.2.ref</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General.AspNet.IIS-NF-4.5.2\MaxFactry.General.AspNet.IIS-NF-4.5.2.ref.csproj">
+      <Project>{788ee320-dcde-457e-84df-e9f3869968d5}</Project>
+      <Name>MaxFactry.General.AspNet.IIS-NF-4.5.2.ref</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MaxFactry.General\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.ref.csproj">
       <Project>{3a10b3b8-d2dd-4a75-bab1-54b38fbbcae2}</Project>
       <Name>MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.ref</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxFactry.Module.Cms-NF-4.5.2.csproj">
+    <ProjectReference Include="..\MaxFactry.Module.Cms-NF-4.5.2\MaxFactry.Module.Cms-NF-4.5.2.ref.csproj">
       <Project>{42e9cfe1-fec1-421a-94e7-a7f595351a01}</Project>
-      <Name>MaxFactry.Module.Cms-NF-4.5.2</Name>
+      <Name>MaxFactry.Module.Cms-NF-4.5.2.ref</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Src\PresentationLayer\Models\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

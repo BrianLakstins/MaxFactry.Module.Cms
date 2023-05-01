@@ -65,6 +65,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
+    using static System.Net.WebRequestMethods;
 
     [MaxAuthorize(Order = 2)]
     public class MaxCmsController : MaxBaseController
@@ -141,11 +142,12 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                 }
             }
 
+            MaxFactry.General.BusinessLayer.MaxFileEntity loFileEntity = MaxFactry.General.BusinessLayer.MaxFileEntity.Create();
             if (HostingEnvironment.VirtualPathProvider.FileExists("~/views/dist/" + lsPath))
             {
                 VirtualFile loFile = HostingEnvironment.VirtualPathProvider.GetFile("~/views/dist/" + lsPath);
                 Response.Clear();
-                Response.ContentType = MaxFactry.Base.BusinessLayer.MaxBaseIdFileEntity.GetMimeType(loFile.Name);
+                Response.ContentType = loFileEntity.GetMimeType(loFile.Name);
                 Stream loStream = loFile.Open();
                 loStream.CopyTo(Response.OutputStream);
                 Response.Flush();
@@ -157,7 +159,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
             if (System.IO.File.Exists(lsFile))
             {
                 Response.Clear();
-                Response.ContentType = MaxFactry.Base.BusinessLayer.MaxBaseIdFileEntity.GetMimeType(lsFile);
+                Response.ContentType = loFileEntity.GetMimeType(lsFile);
                 byte[] laContent = System.IO.File.ReadAllBytes(lsFile);
                 Response.OutputStream.Write(laContent, 0, laContent.Length);
                 Response.Flush();
