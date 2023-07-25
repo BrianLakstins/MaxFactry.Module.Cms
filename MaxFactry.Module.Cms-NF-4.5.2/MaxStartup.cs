@@ -56,11 +56,11 @@ namespace MaxFactry.Module.Cms
             }
         }
 
-        public override void RegisterProviders()
+        public override void SetProviderConfiguration(MaxIndex loConfig)
         {
         }
 
-        public override void SetProviderConfiguration(MaxIndex loConfig)
+        public override void RegisterProviders()
         {
         }
 

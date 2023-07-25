@@ -42,6 +42,7 @@ namespace MaxFactry.Module.Cms.Mvc4
 
     /// <summary>
     /// Base application for Mvc4 based web applications.
+    /// This is only used when this project is run as an application
     /// </summary>
     public class MaxHttpApplication : System.Web.MaxHttpApplicationMvc4Override
     {

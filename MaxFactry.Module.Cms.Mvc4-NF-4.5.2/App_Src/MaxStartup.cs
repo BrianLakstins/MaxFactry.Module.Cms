@@ -64,14 +64,14 @@ namespace MaxFactry.Module.Cms.Mvc4
             }
         }
 
-        public override void RegisterProviders()
-        {
-            MaxFactry.Module.Cms.MaxStartup.Instance.RegisterProviders();
-        }
-
         public override void SetProviderConfiguration(MaxIndex loConfig)
         {
             MaxFactry.Module.Cms.MaxStartup.Instance.SetProviderConfiguration(loConfig);
+        }
+
+        public override void RegisterProviders()
+        {
+            MaxFactry.Module.Cms.MaxStartup.Instance.RegisterProviders();
         }
 
         public override void ApplicationStartup()

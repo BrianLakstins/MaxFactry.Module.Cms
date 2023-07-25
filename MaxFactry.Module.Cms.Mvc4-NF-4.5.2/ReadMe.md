@@ -1,5 +1,6 @@
 ﻿# Introduction 
 This project is for the CMS Module to integrate with an ASP.NET MVC4 user interface
+Adds ability to manage content on web pages
 
 #Nuget package information
 Most packages are limited to the current version and should not be upgraded because they support the MVC4 nature of the application or the next version has breaking changes
