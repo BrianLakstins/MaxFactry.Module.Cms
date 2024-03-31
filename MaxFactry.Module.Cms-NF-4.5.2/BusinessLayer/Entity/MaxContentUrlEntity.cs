@@ -30,6 +30,7 @@
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="12/18/2014" author="Brian A. Lakstins" description="Updates to follow core data access patterns">
 // <change date="4/20/2016" author="Brian A. Lakstins" description="Updated to use centralized caching.">
+// <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
 // </changelog>
 #endregion
 
@@ -39,6 +40,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Module.Cms.DataLayer;
 
     /// <summary>

@@ -30,6 +30,7 @@
 // <change date="12/17/2020" author="Brian A. Lakstins" description="Initial creation">
 // <change date="1/13/2021" author="Brian A. Lakstins" description="Add logic to update name to prevent duplicate names">
 // <change date="7/8/2021" author="Brian A. Lakstins" description="Add mapindex default for mapping for a selection list">
+// <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
 // </changelog>
 #endregion
 
@@ -40,6 +41,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     using MaxFactry.Core;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Module.Cms.DataLayer;
 
     /// <summary>

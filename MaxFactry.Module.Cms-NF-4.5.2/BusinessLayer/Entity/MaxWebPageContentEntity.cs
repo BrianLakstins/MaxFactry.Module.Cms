@@ -33,6 +33,7 @@
 // <change date="4/20/2016" author="Brian A. Lakstins" description="Updated to use centralized caching.">
 // <change date="7/12/2016" author="Brian A. Lakstins" description="Fix issue with assinging next version not taking group into account.">
 // <change date="11/13/2016" author="Brian A. Lakstins" description="Add a way to remove content and speed up finding current content.">
+// <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
 // </changelog>
 #endregion
 
@@ -42,6 +43,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     using System.Collections.Generic;
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
+    using MaxFactry.Base.DataLayer.Library;
     using MaxFactry.Module.Cms.DataLayer;
 
     /// <summary>
