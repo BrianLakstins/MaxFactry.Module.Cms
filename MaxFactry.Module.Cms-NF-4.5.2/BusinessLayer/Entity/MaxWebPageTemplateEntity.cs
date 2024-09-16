@@ -31,6 +31,7 @@
 // <change date="1/13/2021" author="Brian A. Lakstins" description="Add logic to update name to prevent duplicate names">
 // <change date="7/8/2021" author="Brian A. Lakstins" description="Add mapindex default for mapping for a selection list">
 // <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
+// <change date="9/16/2024" author="Brian A. Lakstins" description="Add checking for null">
 // </changelog>
 #endregion
 
@@ -222,10 +223,10 @@ namespace MaxFactry.Module.Cms.BusinessLayer
                 typeof(MaxWebPageTemplateDataModel)) as MaxWebPageTemplateEntity;
         }
 
-        public override MaxIndex MapIndex(params string[] laPropertyNames)
+        public override MaxIndex MapIndex(params string[] laPropertyNameList)
         {
-            MaxIndex loR = base.MapIndex(laPropertyNames);
-            if (null == laPropertyNames || laPropertyNames.Length == 0 || loR.Count == 0)
+            MaxIndex loR = base.MapIndex(laPropertyNameList);
+            if (null == laPropertyNameList || laPropertyNameList.Length == 0 || loR.Count == 0)
             {
                 loR = base.MapIndex(
                     this.GetType() + ".Id",
