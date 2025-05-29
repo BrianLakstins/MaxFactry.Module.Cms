@@ -2,7 +2,7 @@
 <package  xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>    
     <id>MaxFactry.Module.Cms</id>
-    <version>1.0.24.25</version>
+    <version>1.0.24.44</version>
     <title>MaxFactry CMS Module</title>
     <authors>Brian Lakstins</authors>
     <owners>brianlakstins</owners>
@@ -15,7 +15,7 @@
     <tags></tags>
 	  <dependencies>
 		  <group targetFramework="net452">
-			  <dependency id="MaxFactry.General" version="1.0.24.25" />
+			  <dependency id="MaxFactry.General" version="1.0.24.44" />
 		  </group>
 	  </dependencies>
 	<summary>MaxFactry Cms supports the MaxFactry Framework</summary>
