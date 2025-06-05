@@ -34,6 +34,7 @@
 // <change date="7/12/2016" author="Brian A. Lakstins" description="Fix issue with assinging next version not taking group into account.">
 // <change date="11/13/2016" author="Brian A. Lakstins" description="Add a way to remove content and speed up finding current content.">
 // <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Update for change in repository">
 // </changelog>
 #endregion
 
@@ -44,6 +45,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.DataLayer;
     using MaxFactry.Base.DataLayer.Library;
+    using MaxFactry.Core;
     using MaxFactry.Module.Cms.DataLayer;
 
     /// <summary>
@@ -51,6 +53,8 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     /// </summary>
     public class MaxWebPageContentEntity : MaxFactry.Base.BusinessLayer.MaxBaseIdVersionedEntity
     {
+        private static readonly object _oLock = new object();
+
         /// <summary>
         /// Initializes a new instance of the MaxContentEntity class
         /// </summary>
@@ -193,22 +197,32 @@ namespace MaxFactry.Module.Cms.BusinessLayer
         /// <returns></returns>
         public override int GetNextVersion()
         {
-            MaxDataList loDataList = MaxFactry.Base.DataLayer.MaxBaseIdVersionedRepository.SelectAllByName(this.Data, this.Name);
-            //// Get the largest version number of any entity regardless of active or deleted.
-            int lnVersionCurrent = 0;
-            for (int lnD = 0; lnD < loDataList.Count; lnD++)
+            int lnR = 0;
+            lock (_oLock)
             {
-                if (MaxFactry.Core.MaxConvertLibrary.ConvertToGuid(typeof(object), loDataList[lnD].Get(this.DataModel.ContentGroupId)) == this.ContentGroupId)
+                MaxDataQuery loDataQuery = this.GetDataQuery();
+                MaxData loData = new MaxData(this.Data.DataModel);
+                loData.Set(this.MaxBaseIdVersionedDataModel.Name, this.Name);
+                MaxDataList loDataList = MaxBaseReadRepository.Select(loData, loDataQuery, 0, 0, string.Empty);
+                //// Get the largest version number of any entity regardless of active or deleted.
+                int lnVersionCurrent = 0;
+                for (int lnD = 0; lnD < loDataList.Count; lnD++)
                 {
-                    int lnVersion = MaxFactry.Core.MaxConvertLibrary.ConvertToInt(typeof(object), loDataList[lnD].Get(this.MaxBaseIdVersionedDataModel.Version));
-                    if (lnVersion > lnVersionCurrent)
+                    Guid loContentGroupId = MaxFactry.Core.MaxConvertLibrary.ConvertToGuid(typeof(object), loDataList[lnD].Get(this.DataModel.ContentGroupId));
+                    if (this.ContentGroupId == loContentGroupId)
                     {
-                        lnVersionCurrent = lnVersion;
+                        int lnVersion = MaxConvertLibrary.ConvertToInt(typeof(object), loDataList[lnD].Get(this.MaxBaseIdVersionedDataModel.Version));
+                        if (lnVersion > lnVersionCurrent)
+                        {
+                            lnVersionCurrent = lnVersion;
+                        }
                     }
                 }
+
+                lnR = lnVersionCurrent + 1;
             }
 
-            return lnVersionCurrent + 1;
+            return lnR;
         }
 
         /// <summary>

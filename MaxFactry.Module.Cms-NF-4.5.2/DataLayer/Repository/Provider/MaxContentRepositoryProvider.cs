@@ -30,6 +30,7 @@
 // <change date="6/3/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="6/27/2014" author="Brian A. Lakstins" description="Change base from AppId to BaseId.">
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Update CMS editing and storage.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class.">
 // </changelog>
 #endregion
 
@@ -41,7 +42,7 @@ namespace MaxFactry.Module.Cms.DataLayer.Provider
     /// <summary>
     /// Provider for MaxContentRepository
     /// </summary>
-    public class MaxContentRepositoryProvider : MaxFactry.Base.DataLayer.Provider.MaxBaseIdVersionedRepositoryDefaultProvider, IMaxContentRepositoryProvider
+    public class MaxContentRepositoryProvider : MaxFactry.Base.DataLayer.Provider.MaxBaseRepositoryDefaultProvider, IMaxContentRepositoryProvider
     {
     }
 }

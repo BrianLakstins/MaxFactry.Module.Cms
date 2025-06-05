@@ -32,6 +32,7 @@
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Update CMS editing and storage.">
 // <change date="4/20/2016" author="Brian A. Lakstins" description="Added method to select using one property and a comparison.">
 // <change date="12/21/2016" author="Brian A. Lakstins" description="Removed method that was moved to base.">
+// <change date="6/4/2025" author="Brian A. Lakstins" description="Change base class.">
 // </changelog>
 #endregion
 
@@ -44,7 +45,7 @@ namespace MaxFactry.Module.Cms.DataLayer
     /// <summary>
     /// Repository for web content
     /// </summary>
-    public class MaxContentRepository : MaxFactry.Base.DataLayer.MaxBaseIdRepository
+    public class MaxContentRepository : MaxFactry.Base.DataLayer.MaxBaseRepository
     {
 
     }
