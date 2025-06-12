@@ -35,6 +35,7 @@
 // <change date="11/13/2016" author="Brian A. Lakstins" description="Add a way to remove content and speed up finding current content.">
 // <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Update for change in repository">
+// <change date="6/12/2025" author="Brian A. Lakstins" description="Filter content by active only.">
 // </changelog>
 #endregion
 
@@ -178,7 +179,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
         {
             MaxEntityList loR = new MaxEntityList(this.GetType());
             //// Using LoadAllCache because there are not many records and pulling with too many calls is slower
-            MaxEntityList loEntityList = this.LoadAllCache();
+            MaxEntityList loEntityList = this.LoadAllActiveCache();
             for (int lnE = 0; lnE < loEntityList.Count; lnE++)
             {
                 MaxWebPageContentEntity loEntity = loEntityList[lnE] as MaxWebPageContentEntity;

@@ -28,6 +28,7 @@
 #region Change Log
 // <changelog>
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Initial Release">
+// <change date="6/12/2025" author="Brian A. Lakstins" description="Add ContentId to DataKey for unique identification">
 // </changelog>
 #endregion
 
@@ -61,7 +62,7 @@ namespace MaxFactry.Module.Cms.DataLayer
             this.RepositoryProviderType = typeof(MaxFactry.Module.Cms.DataLayer.Provider.MaxContentRepositoryProvider);
             this.RepositoryType = typeof(MaxContentRepository);
             this.SetDataStorageName("MaxCmsWebPageContent");
-            this.AddType(this.ContentGroupId, typeof(Guid));
+            this.AddDataKey(this.ContentGroupId, typeof(Guid));
             this.AddType(this.Value, typeof(string));
         }
 	}
