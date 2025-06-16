@@ -107,7 +107,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         /// <param name="lsName5"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        //[OutputCache(Duration = 600, VaryByParam = "msk;nocache", Location = System.Web.UI.OutputCacheLocation.Server, VaryByCustom = "msk;nocache")]
+        [OutputCache(Duration = 60)]
         public ActionResult MaxCms(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
             MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Index([" + Request.Url.ToString() + "] is not cached.", "MaxCmsController");
