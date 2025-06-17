@@ -46,6 +46,7 @@
 // <change date="11/18/2020" author="Brian A. Lakstins" description="Add handling of dist folder with static files.">
 // <change date="11/18/2020" author="Brian A. Lakstins" description="Update handling of dist folder with static files and folder names.">
 // <change date="2/5/2021" author="Brian A. Lakstins" description="Add handling of dist folder under views folder.">
+// <change date="6/17/2025" author="Brian A. Lakstins" description="Updated logging.">
 // </changelog>
 #endregion
 
@@ -110,17 +111,11 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         [OutputCache(Duration = 60)]
         public ActionResult MaxCms(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogInfo, "Index([" + Request.Url.ToString() + "] is not cached.", "MaxCmsController");
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index(string lsName) start", "MaxCmsController");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogInfo, "{Url} is not in output cache and is being processed.", Request.Url.ToString()));
             string lsPage = this.GetUrl(lsName1, lsName2, lsName3, lsName4, lsName5);
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index(string lsName) [" + lsPage + "]", "MaxCmsController");
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index([" + lsPage + "]) create model before", "MaxCmsController");
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogDebug, "Processing Page {Page}", lsPage));
             MaxWebPageContentViewModel loModel = new MaxWebPageContentViewModel(lsPage, string.Empty);
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index([" + lsPage + "]) create model after", "MaxCmsController");
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index([" + lsPage + "]) get view before", "MaxCmsController");
             string lsView = this.GetView(this.GetViewFileName(lsName1, lsName2, lsName3, lsName4, lsName5));
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index([" + lsPage + "]) get view after", "MaxCmsController");
-            MaxFactry.Core.MaxLogLibrary.Log(MaxEnumGroup.LogDebug, "Index([" + lsPage + "]) end", "MaxCmsController");
 
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaKeyWords", loModel.GetContentPublic("MetaKeyWords"));
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaDescription", loModel.GetContentPublic("MetaDescription"));
@@ -179,7 +174,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
             }
             catch (Exception loE)
             {
-                MaxLogLibrary.Log(new MaxLogEntryStructure(MaxEnumGroup.LogWarning, "Error Getting RawURL in MaxCms {loE.ToString()}", loE.ToString()));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogWarning, "Error Getting RawURL in MaxCms {loE.ToString()}", loE.ToString()));
             }
 
             string lsUserAgent = Request.UserAgent;
