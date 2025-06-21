@@ -36,6 +36,7 @@
 // <change date="3/31/2024" author="Brian A. Lakstins" description="Updated for changes to dependency namespace">
 // <change date="6/4/2025" author="Brian A. Lakstins" description="Update for change in repository">
 // <change date="6/12/2025" author="Brian A. Lakstins" description="Filter content by active only.">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Update base class.">
 // </changelog>
 #endregion
 
@@ -52,7 +53,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
     /// <summary>
     /// Entity to represent content in a web site.
     /// </summary>
-    public class MaxWebPageContentEntity : MaxFactry.Base.BusinessLayer.MaxBaseIdVersionedEntity
+    public class MaxWebPageContentEntity : MaxFactry.Base.BusinessLayer.MaxBaseVersionedEntity
     {
         private static readonly object _oLock = new object();
 
@@ -118,7 +119,7 @@ namespace MaxFactry.Module.Cms.BusinessLayer
             }
         }
 
-        public override MaxFactry.Base.BusinessLayer.MaxBaseIdVersionedEntity GetCurrent(string lsName)
+        public override MaxFactry.Base.BusinessLayer.MaxBaseVersionedEntity GetCurrent(string lsName)
         {
             throw new NotImplementedException();
         }
@@ -134,58 +135,88 @@ namespace MaxFactry.Module.Cms.BusinessLayer
                 typeof(MaxWebPageContentDataModel)) as MaxWebPageContentEntity;
         }
 
-        public static List<MaxWebPageContentEntity> GetContentList(Guid loContentGroupId)
-        {
-            List<MaxWebPageContentEntity> loR = new List<MaxWebPageContentEntity>();
-            MaxEntityList loList = MaxWebPageContentEntity.Create().LoadAllByContentGroupIdCache(loContentGroupId);
-            for (int lnE = 0; lnE < loList.Count; lnE++)
-            {
-                MaxWebPageContentEntity loEntity = loList[lnE] as MaxWebPageContentEntity;
-                if (!string.IsNullOrEmpty(loEntity.Value) && loEntity.Value.Trim().Length > 0)
-                {
-                    loR.Add(loEntity);
-                }
-            }
-
-            return loR;
-        }
-
-        public static string GetContent(Guid loContentGroupId, string lsContentName)
+        public static string GetContent(string lsName, Guid loContentGroupId)
         {
             string lsR = null;
-            if (!Guid.Empty.Equals(loContentGroupId))
+            MaxWebPageContentEntity loEntity = MaxWebPageContentEntity.Create().GetCurrent(lsName, loContentGroupId);
+            if (null != loEntity)
             {
-                List<MaxWebPageContentEntity> loList = GetContentList(loContentGroupId);
-                int lnVersionMax = 0;
-                foreach (MaxWebPageContentEntity loEntity in loList)
-                {
-                    if (loEntity.Name.Equals(lsContentName, StringComparison.InvariantCultureIgnoreCase) && loEntity.Version > lnVersionMax)
-                    {
-                        lsR = loEntity.Value;
-                        lnVersionMax = loEntity.Version;
-                    }
-                }
+                lsR = loEntity.Value;
             }
 
             return lsR;
         }
 
         /// <summary>
-        /// Loads all content for a group
+        /// Gets the current entity for the virtual path.
         /// </summary>
-        /// <param name="loContentGroupId"></param>
-        /// <returns></returns>
-        public MaxEntityList LoadAllByContentGroupIdCache(Guid loContentGroupId)
+        /// <param name="lsName">Key used for the versioned information.</param>
+        /// <returns>Current entity.</returns>
+        public virtual MaxWebPageContentEntity GetCurrent(string lsName, Guid loContentGroupId)
         {
-            MaxEntityList loR = new MaxEntityList(this.GetType());
-            //// Using LoadAllCache because there are not many records and pulling with too many calls is slower
-            MaxEntityList loEntityList = this.LoadAllActiveCache();
-            for (int lnE = 0; lnE < loEntityList.Count; lnE++)
+            MaxWebPageContentEntity loR = null;
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
+            loDataQuery.AddFilter(new MaxDataFilter(this.MaxBaseVersionedDataModel.IsActive, "=", true));
+            loDataQuery.EndGroup();
+
+            MaxData loData = new MaxData(this.Data.DataModel);
+            loData.Set(this.MaxBaseVersionedDataModel.Name, lsName);
+            loData.Set(this.DataModel.ContentGroupId, loContentGroupId);
+            MaxEntityList loList = this.LoadAllByPageCache(loData, 0, 0, string.Empty, loDataQuery);
+            if (loList.Count == 0)
             {
-                MaxWebPageContentEntity loEntity = loEntityList[lnE] as MaxWebPageContentEntity;
-                if (loEntity.ContentGroupId == loContentGroupId && loEntity.IsActive)
+                loDataQuery = this.GetDataQuery();
+                loList = this.LoadAllByPageCache(loData, 0, 0, string.Empty, loDataQuery);
+                if (loList.Count == 0)
                 {
-                    loR.Add(loEntity);
+                    MaxEntityList loAllList = this.LoadAllCache();
+                    for (int lnE = 0; lnE < loAllList.Count; lnE++)
+                    {
+                        MaxWebPageContentEntity loEntity = loAllList[lnE] as MaxWebPageContentEntity;
+                        if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase) &&
+                            loEntity.ContentGroupId.Equals(loContentGroupId))
+                        {
+                            loList.Add(loEntity);
+                        }
+                    }
+                }
+            }
+
+            if (loList.Count == 1)
+            {
+                loR = loList[0] as MaxWebPageContentEntity;
+            }
+            else if (loList.Count > 1)
+            {
+                for (int lnE = 0; lnE < loList.Count; lnE++)
+                {
+                    MaxWebPageContentEntity loEntity = loList[lnE] as MaxWebPageContentEntity;
+                    if (null == loR)
+                    {
+                        loR = loEntity;
+                    }
+                    else if (loR.Version < loEntity.Version)
+                    {
+                        if (loR.IsActive)
+                        {
+                            loR.IsActive = false;
+                            loR.Update();
+                        }
+
+                        loR = loEntity;
+                    }
+                    else if (loEntity.IsActive)
+                    {
+                        loEntity.IsActive = false;
+                        loEntity.Update();
+                    }
+                }
+
+                if (!loR.IsActive)
+                {
+                    loR.IsActive = true;
+                    loR.Update();
                 }
             }
 
@@ -198,56 +229,42 @@ namespace MaxFactry.Module.Cms.BusinessLayer
         /// <returns></returns>
         public override int GetNextVersion()
         {
-            int lnR = 0;
+            int lnR = 1;
             lock (_oLock)
             {
-                MaxDataQuery loDataQuery = this.GetDataQuery();
-                MaxData loData = new MaxData(this.Data.DataModel);
-                loData.Set(this.MaxBaseIdVersionedDataModel.Name, this.Name);
-                MaxDataList loDataList = MaxBaseReadRepository.Select(loData, loDataQuery, 0, 0, string.Empty);
-                //// Get the largest version number of any entity regardless of active or deleted.
-                int lnVersionCurrent = 0;
-                for (int lnD = 0; lnD < loDataList.Count; lnD++)
+                MaxBaseVersionedEntity loEntity = this.GetCurrent(this.Name, this.ContentGroupId);
+                if (null != loEntity)
                 {
-                    Guid loContentGroupId = MaxFactry.Core.MaxConvertLibrary.ConvertToGuid(typeof(object), loDataList[lnD].Get(this.DataModel.ContentGroupId));
-                    if (this.ContentGroupId == loContentGroupId)
-                    {
-                        int lnVersion = MaxConvertLibrary.ConvertToInt(typeof(object), loDataList[lnD].Get(this.MaxBaseIdVersionedDataModel.Version));
-                        if (lnVersion > lnVersionCurrent)
-                        {
-                            lnVersionCurrent = lnVersion;
-                        }
-                    }
+                    lnR = loEntity.Version + 1;
                 }
-
-                lnR = lnVersionCurrent + 1;
             }
 
             return lnR;
         }
 
-        /// <summary>
-        /// Inserts a new record using the next available version id.
-        /// </summary>
-        /// <returns>true if a record was inserted.</returns>
-        public override bool Insert()
+        public MaxEntityList LoadAllByContentGroupIdCache(Guid loContentGroupId)
         {
-            bool lbR = base.Insert();
-            if (lbR)
+            MaxDataQuery loDataQuery = this.GetDataQuery();
+            loDataQuery.StartGroup();
+            loDataQuery.AddFilter(new MaxDataFilter(this.MaxBaseVersionedDataModel.IsActive, "=", true));
+            loDataQuery.EndGroup();
+            MaxData loData = new MaxData(this.Data.DataModel);
+            loData.Set(this.DataModel.ContentGroupId, loContentGroupId);
+            MaxEntityList loR = this.LoadAllByPageCache(loData, 0, 0, string.Empty, loDataQuery);
+            if (loR.Count == 0)
             {
-                MaxEntityList loList = this.LoadAllByContentGroupIdCache(this.ContentGroupId);
-                for (int lnE = 0; lnE < loList.Count; lnE++)
+                MaxEntityList loAllList = this.LoadAllCache();
+                for (int lnE = 0; lnE < loAllList.Count; lnE++)
                 {
-                    MaxWebPageContentEntity loEntity = loList[lnE] as MaxWebPageContentEntity;
-                    if (loEntity.Name == this.Name && loEntity.Version < this.Version)
+                    MaxWebPageContentEntity loEntity = loAllList[lnE] as MaxWebPageContentEntity;
+                    if (loEntity.ContentGroupId.Equals(loContentGroupId))
                     {
-                        loEntity.IsActive = false;
-                        loEntity.Update();
+                        loR.Add(loEntity);
                     }
                 }
             }
 
-            return lbR;
+            return loR;
         }
     }
 }

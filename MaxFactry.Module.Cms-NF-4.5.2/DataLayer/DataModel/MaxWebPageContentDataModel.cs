@@ -29,6 +29,7 @@
 // <changelog>
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Initial Release">
 // <change date="6/12/2025" author="Brian A. Lakstins" description="Add ContentId to DataKey for unique identification">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Update base class and change StorageKey definition.">
 // </changelog>
 #endregion
 
@@ -41,7 +42,7 @@ namespace MaxFactry.Module.Cms.DataLayer
 	/// <summary>
     /// Data model for the configuration information associated with web site content.
 	/// </summary>
-    public class MaxWebPageContentDataModel : MaxFactry.Base.DataLayer.MaxBaseIdVersionedDataModel
+    public class MaxWebPageContentDataModel : MaxFactry.Base.DataLayer.MaxBaseVersionedDataModel
 	{
         /// <summary>
         /// Id of content group, so all content for a page can be queried at one time.
@@ -63,6 +64,9 @@ namespace MaxFactry.Module.Cms.DataLayer
             this.RepositoryType = typeof(MaxContentRepository);
             this.SetDataStorageName("MaxCmsWebPageContent");
             this.AddDataKey(this.ContentGroupId, typeof(Guid));
+            this.AddAttribute(this.Name, AttributeIsStorageKey, "false");
+            this.AddAttribute(this.ContentGroupId, AttributeIsStorageKey, "true");
+
             this.AddType(this.Value, typeof(string));
         }
 	}

@@ -33,6 +33,7 @@
 // <change date="8/21/2014" author="Brian A. Lakstins" description="Update CMS editing and storage.">
 // <change date="11/4/2014" author="Brian A. Lakstins" description="Updated to not use 'action' variable because it conflicts with form action on the client.">
 // <change date="11/13/2018" author="Brian A. Lakstins" description="Move code to entity">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Update base class.">
 // </changelog>
 #endregion
 
@@ -48,7 +49,7 @@ namespace MaxFactry.Module.Cms.PresentationLayer
     /// <summary>
     /// View model for content.
     /// </summary>
-    public class MaxWebPageContentViewModel : MaxBaseEntityViewModel
+    public class MaxWebPageContentViewModel : MaxBaseVersionedViewModel
     {
         private string _sContent = null;
 
@@ -59,10 +60,6 @@ namespace MaxFactry.Module.Cms.PresentationLayer
         private string _sMetaTitle = null;
 
         private MaxContentUrlEntity _oContentUrlEntity = null;
-
-        private List<MaxWebPageContentEntity> _oContentList = null;
-
-        private string _sName = null;
 
         public MaxWebPageContentViewModel()
         {
@@ -88,8 +85,10 @@ namespace MaxFactry.Module.Cms.PresentationLayer
             get
             {
                 bool lbR = false;
-                foreach (MaxWebPageContentEntity loEntity in this.ContentList)
+                MaxEntityList loList = MaxWebPageContentEntity.Create().LoadAllByContentGroupIdCache(this.ContentGroupId);
+                for (int lnE = 0; lnE < loList.Count && !lbR; lnE++)
                 {
+                    MaxWebPageContentEntity loEntity = (MaxWebPageContentEntity)loList[lnE];
                     if (loEntity.Name != "MetaKeyWords" && loEntity.Name != "MetaDescription" && loEntity.Name != "MetaTitle" && !string.IsNullOrEmpty(loEntity.Value))
                     {
                         lbR = true;
@@ -108,10 +107,7 @@ namespace MaxFactry.Module.Cms.PresentationLayer
 
                 return lbR;
             }
-
         }
-
-
 
         /// <summary>
         /// Gets or sets the content
@@ -216,17 +212,6 @@ namespace MaxFactry.Module.Cms.PresentationLayer
             }
         }
 
-        /// <summary>
-        /// Gets or sets the key for the content
-        /// </summary>
-        public string Key
-        {
-            get
-            {
-                return this.GetKey(this.Url, this.Name);
-            }
-        }
-
         public string View
         {
             get;
@@ -238,24 +223,11 @@ namespace MaxFactry.Module.Cms.PresentationLayer
         /// </summary>
         public string Url { get; set; }
 
-        /// <summary>
-        /// Gets or sets the key for the content
-        /// </summary>
-        public string Name
+        protected Guid ContentGroupId
         {
             get
             {
-                return this._sName;
-            }
-
-            set
-            {
-                if (null != this._sName)
-                {
-                    this._sContent = null;
-                }
-
-                this._sName = value;
+                return this.ContentUrlEntity.ContentGroupId;
             }
         }
 
@@ -277,19 +249,6 @@ namespace MaxFactry.Module.Cms.PresentationLayer
                 }
 
                 return this._oContentUrlEntity;
-            }
-        }
-
-        protected List<MaxWebPageContentEntity> ContentList
-        {
-            get
-            {
-                if (null == _oContentList)
-                {
-                    this._oContentList = MaxWebPageContentEntity.GetContentList(this.ContentUrlEntity.ContentGroupId);
-                }
-
-                return _oContentList;
             }
         }
 
@@ -324,17 +283,10 @@ namespace MaxFactry.Module.Cms.PresentationLayer
         protected string GetContent(string lsName)
         {
             string lsR = "<MaxBlank />";
-            int lnVersionMax = 0;
-            foreach (MaxWebPageContentEntity loEntity in this.ContentList)
+            string lsContent = MaxWebPageContentEntity.GetContent(lsName, this.ContentGroupId);
+            if (!string.IsNullOrEmpty(lsContent))
             {
-                if (loEntity.Name.Equals(lsName, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    if (loEntity.Version > lnVersionMax)
-                    {
-                        lsR = loEntity.Value;
-                        lnVersionMax = loEntity.Version;
-                    }
-                }
+                lsR = lsContent;
             }
 
             return lsR;

@@ -47,6 +47,7 @@
 // <change date="11/18/2020" author="Brian A. Lakstins" description="Update handling of dist folder with static files and folder names.">
 // <change date="2/5/2021" author="Brian A. Lakstins" description="Add handling of dist folder under views folder.">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Updated logging.">
+// <change date="6/21/2021" author="Brian A. Lakstins" description="Updates handling of virtual files">
 // </changelog>
 #endregion
 
@@ -54,19 +55,15 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
 {
 
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Web.Mvc;
     using System.Web.Hosting;
-    using System.Web.SessionState;
     using MaxFactry.Core;
     using MaxFactry.Module.Cms.PresentationLayer;
-    using MaxFactry.Base.BusinessLayer;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
-    using static System.Net.WebRequestMethods;
 
     [MaxAuthorize(Order = 2)]
     public class MaxCmsController : MaxBaseController
@@ -108,7 +105,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         /// <param name="lsName5"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [OutputCache(Duration = 60)]
+        [OutputCache(Duration = 60, Location = System.Web.UI.OutputCacheLocation.Server)]
         public ActionResult MaxCms(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
             MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogInfo, "{Url} is not in output cache and is being processed.", Request.Url.ToString()));
@@ -121,45 +118,38 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaDescription", loModel.GetContentPublic("MetaDescription"));
             MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaTitle", loModel.GetContentPublic("MetaTitle"));
 
-            string lsPath = this.Request.QueryString["f"];
-            if (string.IsNullOrEmpty(lsPath))
+            //// This works because of the rewrite rule <action type="Rewrite" url="/{R:1}/?f={R:0}" /> for 
+            //// for these file types: <match url="(.*)((\.txt)|(\.htm)(l?)|(\.json)|(\.js)|(\.png)|(\.css)|(\.jpg)|(\.gif))($|\??)" />
+            //// If other file types need to come through they will need to be added to the web.config file.
+            string lsFilePath = this.Request.QueryString["f"]; 
+            if (string.IsNullOrEmpty(lsFilePath))
             {
-                lsPath = this.Request.Url.AbsolutePath;
-                if (!lsPath.EndsWith("/"))
+                lsFilePath = this.Request.Url.AbsolutePath;
+                if (!lsFilePath.EndsWith("/"))
                 {
-                    lsPath += "/";
+                    lsFilePath += "/";
                 }
 
-                lsPath += "index.html";
-                if (lsPath.StartsWith("/") && lsPath.Length > 1)
+                lsFilePath += "index.html";
+                if (lsFilePath.StartsWith("/") && lsFilePath.Length > 1)
                 {
-                    lsPath = lsPath.Substring(1);
+                    lsFilePath = lsFilePath.Substring(1);
                 }
             }
 
-            MaxFactry.General.BusinessLayer.MaxFileEntity loFileEntity = MaxFactry.General.BusinessLayer.MaxFileEntity.Create();
-            if (HostingEnvironment.VirtualPathProvider.FileExists("~/views/dist/" + lsPath))
+            string[] laPath = new string[] { "~/views/dist/", "~/dist/" };
+            foreach (string lsPath in laPath)
             {
-                VirtualFile loFile = HostingEnvironment.VirtualPathProvider.GetFile("~/views/dist/" + lsPath);
-                Response.Clear();
-                Response.ContentType = loFileEntity.GetMimeType(loFile.Name);
-                Stream loStream = loFile.Open();
-                loStream.CopyTo(Response.OutputStream);
-                Response.Flush();
-                return null;
-            }
-
-            string lsDirectory = Server.MapPath("~/dist");
-            string lsFile = System.IO.Path.Combine(lsDirectory, lsPath);
-            if (System.IO.File.Exists(lsFile))
-            {
-                Response.Clear();
-                Response.ContentType = loFileEntity.GetMimeType(lsFile);
-                byte[] laContent = System.IO.File.ReadAllBytes(lsFile);
-                Response.OutputStream.Write(laContent, 0, laContent.Length);
-                Response.Flush();
-                return null;
-            }
+                if (HostingEnvironment.VirtualPathProvider.FileExists(lsPath + lsFilePath))
+                {
+                    VirtualFile loFile = HostingEnvironment.VirtualPathProvider.GetFile(lsPath + lsFilePath);
+                    Response.Clear();
+                    Response.ContentType = MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(loFile.Name);
+                    Stream loStream = loFile.Open();
+                    loStream.CopyTo(Response.OutputStream);
+                    return null;
+                }
+            }           
 
             loModel.View = lsView;
             if (loModel.View != this._sDefaultView || loModel.HasContent || MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxHtmlHelperLibrary.MaxIsInRole("Admin,Admin - App") || loModel.Url == string.Empty)

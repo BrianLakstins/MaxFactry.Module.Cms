@@ -34,22 +34,18 @@
 // <change date="5/24/2020" author="Brian A. Lakstins" description="Update exception logging for a common exception type">
 // <change date="8/25/2020" author="Brian A. Lakstins" description="Update for change to refernce">
 // <change date="2/15/2021" author="Brian A. Lakstins" description="Add domain for local testing.">
+// <change date="6/21/2021" author="Brian A. Lakstins" description="Updates for changes to base.">
 // </changelog>
 #endregion
 
 namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq.Expressions;
     using System.Web;
     using System.Web.Mvc;
-    using System.Web.Mvc.Html;
     using MaxFactry.Core;
-    using MaxFactry.Base.BusinessLayer;
     using MaxFactry.Base.PresentationLayer;
     using MaxFactry.Module.Cms.BusinessLayer;
-    using MaxFactry.Module.Cms.Mvc4.PresentationLayer;
 
     /// <summary>
     /// Helper library for producing HTML
@@ -68,7 +64,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
 
                 string lsUrl = MaxFactry.Module.Cms.Mvc4.PresentationLayer.MaxHtmlHelperLibrary.GetCmsUrl(helper.ViewContext.RequestContext.HttpContext.Request.Url);
                 Guid loContentGroupId = MaxContentUrlEntity.GetContentGroupByUrl(lsUrl);
-                lsR = MaxWebPageContentEntity.GetContent(loContentGroupId, lsContentName);
+                lsR = MaxWebPageContentEntity.GetContent(lsContentName, loContentGroupId);
             }
 
             if (!string.IsNullOrEmpty(lsR))
@@ -94,7 +90,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
         public static bool MaxCmsEmailForm<T>(this HtmlHelper<T> helper, string lsEmailToAddressList, string lsEmailSubject, string lsEmailFrom, string lsRelationId, string lsCaptchaSecret, string lsRequiredFieldList)
         {
             HttpRequestBase loRequest = helper.ViewContext.RequestContext.HttpContext.Request;
-            MaxBaseEntityViewModel loModel = helper.ViewData.Model as MaxBaseEntityViewModel;
+            MaxBaseViewModel loModel = helper.ViewData.Model as MaxBaseViewModel;
             bool lbR = true;
             var lsTest = string.Empty;
             if (loRequest.HttpMethod.Equals("post", StringComparison.InvariantCultureIgnoreCase))
