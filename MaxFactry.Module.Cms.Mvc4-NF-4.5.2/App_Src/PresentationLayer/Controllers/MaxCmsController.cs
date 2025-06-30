@@ -47,7 +47,8 @@
 // <change date="11/18/2020" author="Brian A. Lakstins" description="Update handling of dist folder with static files and folder names.">
 // <change date="2/5/2021" author="Brian A. Lakstins" description="Add handling of dist folder under views folder.">
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Updated logging.">
-// <change date="6/21/2021" author="Brian A. Lakstins" description="Updates handling of virtual files">
+// <change date="6/21/2025" author="Brian A. Lakstins" description="Updates handling of virtual files">
+// <change date="6/30/2025" author="Brian A. Lakstins" description="Use zip file(s) for static content. Process static content files before any View files.">
 // </changelog>
 #endregion
 
@@ -55,6 +56,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
 {
 
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text.RegularExpressions;
     using System.Web;
@@ -64,6 +66,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
     using MaxFactry.Module.Cms.PresentationLayer;
     using MaxFactry.General.BusinessLayer;
     using MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer;
+    using System.IO.Compression;
 
     [MaxAuthorize(Order = 2)]
     public class MaxCmsController : MaxBaseController
@@ -77,6 +80,10 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         private static object _oLock = new object();
 
         private static MaxIndex _oCmsPageNotFoundLogIndex = new MaxIndex();
+
+        private static bool _bZipContentIntialized = false; 
+
+        private static Dictionary<string, byte[]> _oZipContentFileIndex = new Dictionary<string, byte[]>();
 
         protected string GetUrl(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
@@ -97,6 +104,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         /// <summary>
         /// CMS Pages should cached for 600 seconds (10 minutes) based on Url and MaxStorageKey.
         /// Cookies cannot be sent with the page, or it will not store in the cache.
+        /// Cache the output for 1 hour so that it can be used by other requests.  It's either static files or dynamic content that does not change often.
         /// </summary>
         /// <param name="lsName1"></param>
         /// <param name="lsName2"></param>
@@ -105,23 +113,14 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         /// <param name="lsName5"></param>
         /// <returns></returns>
         [AllowAnonymous]
-        [OutputCache(Duration = 60, Location = System.Web.UI.OutputCacheLocation.Server)]
+        [OutputCache(Duration = 3600, Location = System.Web.UI.OutputCacheLocation.Server)]
         public ActionResult MaxCms(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
             MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogInfo, "{Url} is not in output cache and is being processed.", Request.Url.ToString()));
-            string lsPage = this.GetUrl(lsName1, lsName2, lsName3, lsName4, lsName5);
-            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogDebug, "Processing Page {Page}", lsPage));
-            MaxWebPageContentViewModel loModel = new MaxWebPageContentViewModel(lsPage, string.Empty);
-            string lsView = this.GetView(this.GetViewFileName(lsName1, lsName2, lsName3, lsName4, lsName5));
-
-            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaKeyWords", loModel.GetContentPublic("MetaKeyWords"));
-            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaDescription", loModel.GetContentPublic("MetaDescription"));
-            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaTitle", loModel.GetContentPublic("MetaTitle"));
-
-            //// This works because of the rewrite rule <action type="Rewrite" url="/{R:1}/?f={R:0}" /> for 
+            //// This works to find the file page because of the rewrite rule <action type="Rewrite" url="/{R:1}/?f={R:0}" /> for 
             //// for these file types: <match url="(.*)((\.txt)|(\.htm)(l?)|(\.json)|(\.js)|(\.png)|(\.css)|(\.jpg)|(\.gif))($|\??)" />
             //// If other file types need to come through they will need to be added to the web.config file.
-            string lsFilePath = this.Request.QueryString["f"]; 
+            string lsFilePath = this.Request.QueryString["f"];
             if (string.IsNullOrEmpty(lsFilePath))
             {
                 lsFilePath = this.Request.Url.AbsolutePath;
@@ -137,6 +136,102 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                 }
             }
 
+            string lsDataDirectory = MaxConvertLibrary.ConvertToString(typeof(object), MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxDataDirectory"));
+            if (!string.IsNullOrEmpty(lsDataDirectory))
+            {
+                if (!_bZipContentIntialized)
+                {
+                    lock (_oLock)
+                    {
+                        if (!_bZipContentIntialized)
+                        {
+                            _bZipContentIntialized = true;
+                            string[] laFile = Directory.GetFiles(lsDataDirectory);
+                            foreach (string lsFile in laFile)
+                            {
+                                if (lsFile.EndsWith(".zip"))
+                                {
+                                    FileInfo loFile = new FileInfo(lsFile);
+                                    string lsFileBase = loFile.Name.Replace(".zip", string.Empty) + "/";
+                                    FileStream loZipFileStream = System.IO.File.OpenRead(lsFile);
+                                    try
+                                    {
+                                        ZipArchive loArchive = new ZipArchive(loZipFileStream, ZipArchiveMode.Read, true);
+                                        try
+                                        {
+                                            for (int lnF = 0; lnF < loArchive.Entries.Count; lnF++)
+                                            {
+                                                ZipArchiveEntry loEntry = loArchive.Entries[lnF];
+                                                if (loEntry.Length > 0)
+                                                {
+                                                    Stream loFileStream = loEntry.Open();
+                                                    try
+                                                    {
+                                                        string lsFileName = loEntry.FullName;
+                                                        if (lsFileName.StartsWith(lsFileBase))
+                                                        {
+                                                            lsFileName = lsFileName.Substring(lsFileBase.Length);
+                                                        }
+
+                                                        if (!_oZipContentFileIndex.ContainsKey(lsFileName))
+                                                        {
+                                                            if (loFileStream is MemoryStream)
+                                                            {
+                                                                _oZipContentFileIndex.Add(lsFileName, ((MemoryStream)loFileStream).ToArray());
+                                                            }
+                                                            else
+                                                            {
+                                                                MemoryStream loMemoryStream = new MemoryStream();
+                                                                try
+                                                                {
+                                                                    loFileStream.CopyTo(loMemoryStream);
+                                                                    _oZipContentFileIndex.Add(lsFileName, loMemoryStream.ToArray());
+                                                                }
+                                                                finally
+                                                                {
+                                                                    loMemoryStream.Close();
+                                                                    loMemoryStream.Dispose();
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    finally
+                                                    {
+                                                        loFileStream.Close();
+                                                        loFileStream.Dispose();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        finally
+                                        {
+                                            loArchive.Dispose();
+                                        }
+                                    }
+                                    finally
+                                    {
+                                        if (null != loZipFileStream)
+                                        {
+                                            loZipFileStream.Close();
+                                            loZipFileStream.Dispose();
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (_oZipContentFileIndex.Count > 0 && _oZipContentFileIndex.ContainsKey(lsFilePath))
+                {
+                    Response.Clear();
+                    Response.ContentType = MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(lsFilePath);
+                    Response.OutputStream.Write(_oZipContentFileIndex[lsFilePath], 0, _oZipContentFileIndex[lsFilePath].Length);
+                    return null;
+                }
+            }
+
             string[] laPath = new string[] { "~/views/dist/", "~/dist/" };
             foreach (string lsPath in laPath)
             {
@@ -149,7 +244,16 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                     loStream.CopyTo(Response.OutputStream);
                     return null;
                 }
-            }           
+            }
+
+            string lsPage = this.GetUrl(lsName1, lsName2, lsName3, lsName4, lsName5);
+            MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogDebug, "Processing Page {Page}", lsPage));
+            MaxWebPageContentViewModel loModel = new MaxWebPageContentViewModel(lsPage, string.Empty);
+            string lsView = this.GetView(this.GetViewFileName(lsName1, lsName2, lsName3, lsName4, lsName5));
+
+            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaKeyWords", loModel.GetContentPublic("MetaKeyWords"));
+            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaDescription", loModel.GetContentPublic("MetaDescription"));
+            MaxConfigurationLibrary.SetValue(MaxEnumGroup.ScopeProcess, "MaxHtmlContent-MetaTitle", loModel.GetContentPublic("MetaTitle"));
 
             loModel.View = lsView;
             if (loModel.View != this._sDefaultView || loModel.HasContent || MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer.MaxHtmlHelperLibrary.MaxIsInRole("Admin,Admin - App") || loModel.Url == string.Empty)
