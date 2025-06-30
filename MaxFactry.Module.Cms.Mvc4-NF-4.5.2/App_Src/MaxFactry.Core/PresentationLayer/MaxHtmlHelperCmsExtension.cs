@@ -127,7 +127,7 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         }
                         else
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxHtmlHelperCmsExtension, "MaxCmsEmailForm", MaxEnumGroup.LogError, "Getting value for {lsKey} from form field caused exception", loE, lsKey));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxHtmlHelperCmsExtension), "MaxCmsEmailForm", MaxEnumGroup.LogError, "Getting value for {lsKey} from form field caused exception", loE, lsKey));
                         }
                     }
 
