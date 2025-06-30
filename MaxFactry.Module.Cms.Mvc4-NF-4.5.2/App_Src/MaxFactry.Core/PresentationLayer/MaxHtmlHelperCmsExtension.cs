@@ -123,11 +123,11 @@ namespace MaxFactry.General.AspNet.IIS.Mvc4.PresentationLayer
                         lsValue = "ERROR:" + HttpUtility.HtmlEncode(loE.Message);
                         if (loE is HttpRequestValidationException)
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("Request.Form", MaxEnumGroup.LogWarning, "Getting value for {lsKey} from form field caused HttpValidationException", lsKey));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxHtmlHelperCmsExtension), "MaxCmsEmailForm", MaxEnumGroup.LogWarning, "Getting value for {lsKey} from form field caused HttpValidationException", lsKey));
                         }
                         else
                         {
-                            MaxLogLibrary.Log(new MaxLogEntryStructure("Request.Form", MaxEnumGroup.LogError, "Getting value for {lsKey} from form field caused exception", loE, lsKey));
+                            MaxLogLibrary.Log(new MaxLogEntryStructure(typeof(MaxHtmlHelperCmsExtension, "MaxCmsEmailForm", MaxEnumGroup.LogError, "Getting value for {lsKey} from form field caused exception", loE, lsKey));
                         }
                     }
 

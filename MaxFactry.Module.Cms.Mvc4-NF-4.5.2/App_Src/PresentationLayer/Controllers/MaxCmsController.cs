@@ -354,7 +354,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                 lsContent += lsAccessLog;
 
                 lsContent += MaxFactry.Core.MaxLogLibrary.GetEnvironmentInformation() + "\r\n\r\n";
-                MaxLogLibrary.Log(new MaxLogEntryStructure("404", MaxEnumGroup.LogWarning, "404 notification from MaxCms {lsContent}", lsContent));
+                MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms-404", MaxEnumGroup.LogWarning, "404 notification from MaxCms {lsContent}", lsContent));
 
                 if (lbSendEmail)
                 {
