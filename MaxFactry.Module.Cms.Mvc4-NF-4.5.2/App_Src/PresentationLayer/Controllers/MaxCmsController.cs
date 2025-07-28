@@ -49,6 +49,7 @@
 // <change date="6/17/2025" author="Brian A. Lakstins" description="Updated logging.">
 // <change date="6/21/2025" author="Brian A. Lakstins" description="Updates handling of virtual files">
 // <change date="6/30/2025" author="Brian A. Lakstins" description="Use zip file(s) for static content. Process static content files before any View files.">
+// <change date="7/28/2025" author="Brian A. Lakstins" description="Update how files are returned so they can still be cached.">
 // </changelog>
 #endregion
 
@@ -225,10 +226,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
 
                 if (_oZipContentFileIndex.Count > 0 && _oZipContentFileIndex.ContainsKey(lsFilePath))
                 {
-                    Response.Clear();
-                    Response.ContentType = MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(lsFilePath);
-                    Response.OutputStream.Write(_oZipContentFileIndex[lsFilePath], 0, _oZipContentFileIndex[lsFilePath].Length);
-                    return null;
+                    return File(_oZipContentFileIndex[lsFilePath], MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(lsFilePath));
                 }
             }
 
@@ -238,11 +236,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                 if (HostingEnvironment.VirtualPathProvider.FileExists(lsPath + lsFilePath))
                 {
                     VirtualFile loFile = HostingEnvironment.VirtualPathProvider.GetFile(lsPath + lsFilePath);
-                    Response.Clear();
-                    Response.ContentType = MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(loFile.Name);
-                    Stream loStream = loFile.Open();
-                    loStream.CopyTo(Response.OutputStream);
-                    return null;
+                    return File(loFile.Open(), MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(loFile.Name));
                 }
             }
 
