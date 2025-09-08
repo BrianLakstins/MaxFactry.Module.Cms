@@ -50,6 +50,7 @@
 // <change date="6/21/2025" author="Brian A. Lakstins" description="Updates handling of virtual files">
 // <change date="6/30/2025" author="Brian A. Lakstins" description="Use zip file(s) for static content. Process static content files before any View files.">
 // <change date="7/28/2025" author="Brian A. Lakstins" description="Update how files are returned so they can still be cached.">
+// <change date="9/8/2025" author="Brian A. Lakstins" description="Allow update to zip files">
 // </changelog>
 #endregion
 
@@ -78,13 +79,15 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
 
         private static MaxIndex _oCmsPageNotFoundClientIndex = new MaxIndex();
 
-        private static object _oLock = new object();
+        protected static object _oLock = new object();
 
         private static MaxIndex _oCmsPageNotFoundLogIndex = new MaxIndex();
 
-        private static bool _bZipContentIntialized = false; 
+        private static DateTime _dZipFileLastChecked = DateTime.MinValue;
 
-        private static Dictionary<string, byte[]> _oZipContentFileIndex = new Dictionary<string, byte[]>();
+        private static MaxIndex _oZipFileIndex = new MaxIndex();
+
+        protected static Dictionary<string, byte[]> _oZipContentFileIndex = new Dictionary<string, byte[]>();
 
         protected string GetUrl(string lsName1, string lsName2, string lsName3, string lsName4, string lsName5)
         {
@@ -103,8 +106,6 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         }
 
         /// <summary>
-        /// CMS Pages should cached for 600 seconds (10 minutes) based on Url and MaxStorageKey.
-        /// Cookies cannot be sent with the page, or it will not store in the cache.
         /// Cache the output for 1 hour so that it can be used by other requests.  It's either static files or dynamic content that does not change often.
         /// </summary>
         /// <param name="lsName1"></param>
@@ -119,7 +120,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         {
             MaxFactry.Core.MaxLogLibrary.Log(new MaxLogEntryStructure(this.GetType(), "MaxCms", MaxEnumGroup.LogInfo, "{Url} is not in output cache and is being processed.", Request.Url.ToString()));
             //// This works to find the file page because of the rewrite rule <action type="Rewrite" url="/{R:1}/?f={R:0}" /> for 
-            //// for these file types: <match url="(.*)((\.txt)|(\.htm)(l?)|(\.json)|(\.js)|(\.png)|(\.css)|(\.jpg)|(\.gif))($|\??)" />
+            //// for these file types: <match url="(.*)((\.txt)|(\.htm)(l?)|(\.json)|(\.js)|(\.png)|(\.css)|(\.jpg)|(\.gif)|(\.svg))($|\??)" />
             //// If other file types need to come through they will need to be added to the web.config file.
             string lsFilePath = this.Request.QueryString["f"];
             if (string.IsNullOrEmpty(lsFilePath))
@@ -137,97 +138,10 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
                 }
             }
 
-            string lsDataDirectory = MaxConvertLibrary.ConvertToString(typeof(object), MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxDataDirectory"));
-            if (!string.IsNullOrEmpty(lsDataDirectory))
+            this.UpdateZipContent();
+            if (_oZipContentFileIndex.Count > 0 && _oZipContentFileIndex.ContainsKey(lsFilePath))
             {
-                if (!_bZipContentIntialized)
-                {
-                    lock (_oLock)
-                    {
-                        if (!_bZipContentIntialized)
-                        {
-                            _bZipContentIntialized = true;
-                            string[] laFile = Directory.GetFiles(lsDataDirectory);
-                            foreach (string lsFile in laFile)
-                            {
-                                if (lsFile.EndsWith(".zip"))
-                                {
-                                    FileInfo loFile = new FileInfo(lsFile);
-                                    string lsFileBase = loFile.Name.Replace(".zip", string.Empty) + "/";
-                                    FileStream loZipFileStream = System.IO.File.OpenRead(lsFile);
-                                    try
-                                    {
-                                        ZipArchive loArchive = new ZipArchive(loZipFileStream, ZipArchiveMode.Read, true);
-                                        try
-                                        {
-                                            for (int lnF = 0; lnF < loArchive.Entries.Count; lnF++)
-                                            {
-                                                ZipArchiveEntry loEntry = loArchive.Entries[lnF];
-                                                if (loEntry.Length > 0)
-                                                {
-                                                    Stream loFileStream = loEntry.Open();
-                                                    try
-                                                    {
-                                                        string lsFileName = loEntry.FullName;
-                                                        if (lsFileName.StartsWith(lsFileBase))
-                                                        {
-                                                            lsFileName = lsFileName.Substring(lsFileBase.Length);
-                                                        }
-
-                                                        if (!_oZipContentFileIndex.ContainsKey(lsFileName))
-                                                        {
-                                                            if (loFileStream is MemoryStream)
-                                                            {
-                                                                _oZipContentFileIndex.Add(lsFileName, ((MemoryStream)loFileStream).ToArray());
-                                                            }
-                                                            else
-                                                            {
-                                                                MemoryStream loMemoryStream = new MemoryStream();
-                                                                try
-                                                                {
-                                                                    loFileStream.CopyTo(loMemoryStream);
-                                                                    _oZipContentFileIndex.Add(lsFileName, loMemoryStream.ToArray());
-                                                                }
-                                                                finally
-                                                                {
-                                                                    loMemoryStream.Close();
-                                                                    loMemoryStream.Dispose();
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    finally
-                                                    {
-                                                        loFileStream.Close();
-                                                        loFileStream.Dispose();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        finally
-                                        {
-                                            loArchive.Dispose();
-                                        }
-                                    }
-                                    finally
-                                    {
-                                        if (null != loZipFileStream)
-                                        {
-                                            loZipFileStream.Close();
-                                            loZipFileStream.Dispose();
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (_oZipContentFileIndex.Count > 0 && _oZipContentFileIndex.ContainsKey(lsFilePath))
-                {
-                    return File(_oZipContentFileIndex[lsFilePath], MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(lsFilePath));
-                }
+                return File(_oZipContentFileIndex[lsFilePath], MaxFactry.General.BusinessLayer.MaxFileEntity.Create().GetMimeType(lsFilePath));
             }
 
             string[] laPath = new string[] { "~/views/dist/", "~/dist/" };
@@ -431,6 +345,144 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
             }
 
             return this._sDefaultView;
+        }
+
+        protected virtual void UpdateZipContent()        
+        {
+            this.UpdateZipContent(1);
+        }
+
+        protected virtual void UpdateZipContent(int lnUpdateMinMinutes)
+        {
+            //// Only check once per minute
+            if (_dZipFileLastChecked.AddMinutes(lnUpdateMinMinutes) < DateTime.UtcNow)
+            {
+                lock (_oLock)
+                {
+                    if (_dZipFileLastChecked.AddMinutes(lnUpdateMinMinutes) < DateTime.UtcNow)
+                    {
+                        _dZipFileLastChecked = DateTime.UtcNow;
+                        string lsDataDirectory = MaxConvertLibrary.ConvertToString(typeof(object), MaxConfigurationLibrary.GetValue(MaxEnumGroup.ScopeApplication, "MaxDataDirectory"));
+                        if (!string.IsNullOrEmpty(lsDataDirectory))
+                        {
+                            string lsZipFolder = Path.Combine(lsDataDirectory, "zip");
+                            this.UpdateZipContent(lsZipFolder, "dist");
+                        }
+                    }
+                }
+            }
+        }
+
+        protected virtual void UpdateZipContent(string lsZipFolder, string lsRootName)
+        {
+            //// Only check once per minute
+            if (!string.IsNullOrEmpty(lsZipFolder))
+            {
+                string[] laFile = Directory.GetFiles(lsZipFolder);
+                foreach (string lsFile in laFile)
+                {
+                    if (lsFile.ToLower().EndsWith(".zip"))
+                    {
+                        bool lbUpdateFile = !_oZipFileIndex.Contains(lsFile);
+                        if (!lbUpdateFile)
+                        {
+                            DateTime ldLastFileDateTime = MaxConvertLibrary.ConvertToDateTimeUtc(typeof(object), _oZipFileIndex[lsFile]);
+                            if (ldLastFileDateTime < System.IO.File.GetLastWriteTimeUtc(lsFile))
+                            {
+                                lbUpdateFile = true;
+                            }
+                        }
+
+                        if (lbUpdateFile)
+                        {
+                            //// The .zip file should use the name of the url folder (or dist.zip for the root folder)
+                            //// All files should be in the "dist" folder in the zip file.
+                            //// The home page for the site would be in dist.zip/dist/index.html for the root page of the site.
+                            _oZipFileIndex.Add(lsFile, System.IO.File.GetLastWriteTimeUtc(lsFile));
+                            FileInfo loFile = new FileInfo(lsFile);
+                            string lsFolderUrl = loFile.Name.ToLower().Replace(".zip", string.Empty) + "/";
+                            if (lsFolderUrl == lsRootName + "/")
+                            {
+                                lsFolderUrl = string.Empty;
+                            }
+
+                            FileStream loZipFileStream = System.IO.File.OpenRead(lsFile);
+                            try
+                            {
+                                ZipArchive loArchive = new ZipArchive(loZipFileStream, ZipArchiveMode.Read, true);
+                                try
+                                {
+                                    for (int lnF = 0; lnF < loArchive.Entries.Count; lnF++)
+                                    {
+                                        ZipArchiveEntry loEntry = loArchive.Entries[lnF];
+                                        if (loEntry.Length > 0)
+                                        {
+                                            Stream loFileStream = loEntry.Open();
+                                            try
+                                            {
+                                                string lsFileName = loEntry.FullName;
+                                                if (lsFileName.StartsWith(lsRootName + "/"))
+                                                {
+                                                    lsFileName = lsFolderUrl + lsFileName.Substring((lsRootName + "/").Length);
+                                                    byte[] laContent = null;
+                                                    if (loFileStream is MemoryStream)
+                                                    {
+                                                        laContent = ((MemoryStream)loFileStream).ToArray();
+                                                    }
+                                                    else
+                                                    {
+                                                        MemoryStream loMemoryStream = new MemoryStream();
+                                                        try
+                                                        {
+                                                            loFileStream.CopyTo(loMemoryStream);
+                                                            laContent = loMemoryStream.ToArray();
+                                                        }
+                                                        finally
+                                                        {
+                                                            loMemoryStream.Close();
+                                                            loMemoryStream.Dispose();
+                                                        }
+                                                    }
+
+                                                    if (null != laContent)
+                                                    {
+                                                        if (_oZipContentFileIndex.ContainsKey(lsFileName))
+                                                        {
+                                                            _oZipContentFileIndex[lsFileName] = laContent;
+                                                        }
+                                                        else
+                                                        {
+                                                            _oZipContentFileIndex.Add(lsFileName, laContent);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            finally
+                                            {
+                                                loFileStream.Close();
+                                                loFileStream.Dispose();
+                                            }
+                                        }
+                                    }
+                                }
+                                finally
+                                {
+                                    loArchive.Dispose();
+                                }
+                            }
+                            finally
+                            {
+                                if (null != loZipFileStream)
+                                {
+                                    loZipFileStream.Close();
+                                    loZipFileStream.Dispose();
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
         }
     }
 }
