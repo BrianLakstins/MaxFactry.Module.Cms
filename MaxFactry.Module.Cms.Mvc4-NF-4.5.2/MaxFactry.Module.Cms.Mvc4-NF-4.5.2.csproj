@@ -61,8 +61,8 @@
     <Reference Include="HtmlAgilityPack, Version=1.5.1.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\HtmlAgilityPack.1.5.1\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.24.64, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.64\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.Base-NF-4.5.2, Version=1.0.24.75, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.Base.1.0.24.75\lib\net452\MaxFactry.Base-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="MaxFactry.Core-NF-4.5.2, Version=1.0.24.68, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.Core.1.0.24.68\lib\net452\MaxFactry.Core-NF-4.5.2.dll</HintPath>
@@ -76,8 +76,8 @@
     <Reference Include="MaxFactry.General.AspNet.IIS-NF-4.5.2, Version=1.0.24.63, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
       <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.1.0.24.63\lib\net452\MaxFactry.General.AspNet.IIS-NF-4.5.2.dll</HintPath>
     </Reference>
-    <Reference Include="MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2, Version=1.0.24.66, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
-      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.Mvc4.1.0.24.66\lib\net452\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.dll</HintPath>
+    <Reference Include="MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2, Version=1.0.24.75, Culture=neutral, PublicKeyToken=fbbc3eafbb4c95f8, processorArchitecture=MSIL">
+      <HintPath>..\..\_nuget\MaxFactry.General.AspNet.IIS.Mvc4.1.0.24.75\lib\net452\MaxFactry.General.AspNet.IIS.Mvc4-NF-4.5.2.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
