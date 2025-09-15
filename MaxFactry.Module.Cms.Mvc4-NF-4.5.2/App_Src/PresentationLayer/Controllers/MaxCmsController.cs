@@ -51,6 +51,7 @@
 // <change date="6/30/2025" author="Brian A. Lakstins" description="Use zip file(s) for static content. Process static content files before any View files.">
 // <change date="7/28/2025" author="Brian A. Lakstins" description="Update how files are returned so they can still be cached.">
 // <change date="9/8/2025" author="Brian A. Lakstins" description="Allow update to zip files">
+// <change date="9/15/2025" author="Brian A. Lakstins" description="Make sure zip folder exists">
 // </changelog>
 #endregion
 
@@ -376,7 +377,7 @@ namespace MaxFactry.Module.Cms.Mvc4.PresentationLayer
         protected virtual void UpdateZipContent(string lsZipFolder, string lsRootName)
         {
             //// Only check once per minute
-            if (!string.IsNullOrEmpty(lsZipFolder))
+            if (!string.IsNullOrEmpty(lsZipFolder) && Directory.Exists(lsZipFolder))
             {
                 string[] laFile = Directory.GetFiles(lsZipFolder);
                 foreach (string lsFile in laFile)
