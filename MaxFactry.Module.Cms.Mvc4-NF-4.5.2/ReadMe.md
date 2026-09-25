@@ -31,3 +31,6 @@ Packages are grouped by dependency
 
 <package id="Microsoft.AspNet.WebApi.WebHost" version="4.0.30506.0" targetFramework="net452" />
 <package id="Microsoft.AspNet.WebApi" version="4.0.30506.0" targetFramework="net452" />
+
+Update-Package -Reinstall -ProjectName MaxFactry.Module.Cms.Mvc4-NF-4.5.2.ref
+Update-Package -Reinstall -ProjectName MaxFactry.Module.Cms.Mvc4-NF-4.5.2
